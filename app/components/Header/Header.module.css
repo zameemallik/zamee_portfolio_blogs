@@ -1,0 +1,44 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--mantine-spacing-md);
+  background-color: var(--mantine-color-white);
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  height: 70px;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.links {
+  display: flex;
+  gap: 1rem;
+}
+
+.link {
+  font-size: var(--mantine-font-size-md);
+  color: var(--mantine-color-gray-7);
+  text-decoration: none; /* アンダーバーを削除 */
+  padding: 0.5rem 1rem;
+  border-radius: var(--mantine-radius-sm);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.link:hover,
+.link:focus,
+.link:active {
+  text-decoration: none; /* ホバーや押下時も下線を削除 */
+  background-color: var(--mantine-color-gray-5); /* 背景色 */
+  color: var(--mantine-color-gray-7); /* ホバー時の文字色を元に戻す */
+}
