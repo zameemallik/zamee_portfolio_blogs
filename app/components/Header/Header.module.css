@@ -32,7 +32,9 @@
   text-decoration: none; /* アンダーバーを削除 */
   padding: 0.5rem 1rem;
   border-radius: var(--mantine-radius-sm);
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .link:hover,

@@ -1,16 +1,6 @@
 import "@mantine/core/styles.css";
-import {
-  MantineProvider,
-  ColorSchemeScript,
-  AppShell,
-  Container,
-} from "@mantine/core";
+import { MantineProvider, ColorSchemeScript, Container } from "@mantine/core";
 import { HeaderComponents } from "./components/Header/Header";
-
-// export const metadata = {
-//   title: "My Mantine App",
-//   description: "An application using Mantine with Next.js",
-// };
 
 export default function RootLayout({
   children,
@@ -27,7 +17,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <MantineProvider>
+        <MantineProvider defaultColorScheme="light">
           <HeaderComponents />
           <Container style={{ marginTop: "80px" }}>{children}</Container>
         </MantineProvider>

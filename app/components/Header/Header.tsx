@@ -34,7 +34,7 @@ export function HeaderComponents() {
         } else {
           setUser(null);
         }
-      }
+      },
     );
 
     // クリーンアップ関数

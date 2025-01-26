@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     if (!content || !postId) {
       return NextResponse.json(
         { error: "Content and Post ID are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating comment:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

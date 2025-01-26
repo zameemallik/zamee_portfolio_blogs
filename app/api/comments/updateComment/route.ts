@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     console.error("Error updating comment:", error);
     return NextResponse.json(
       { error: "コメントの更新中にエラーが発生しました。" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
