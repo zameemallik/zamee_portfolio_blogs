@@ -7,7 +7,11 @@ export default async function ProfilePage({
 
   return (
     <>
-      <h1>Welcome, {userName}!</h1>
+      <h1>
+        Welcome, {userName}! <br />
+        こちらのページまだ未実装です。
+      </h1>
+      <p></p>
     </>
   );
 }
