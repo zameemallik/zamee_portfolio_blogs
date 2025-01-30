@@ -3,14 +3,12 @@ import { CommentCard } from "../../components/CommentCard/CommentCard";
 import { Box, Title, Text, Group, Avatar, Divider } from "@mantine/core";
 import CommentForm from "../../components/CommentForm/CommentForm";
 
-interface Props {
-  params: {
-    postId: string;
-  };
-}
-
-export default async function BlogDetail({ params }: Props) {
-  const { postId } = params;
+export default async function BlogDetail({
+  params,
+}: {
+  params: Promise<{ postId: string }>;
+}) {
+  const { postId } = await params;
 
   if (!postId) {
     console.error("postId is undefined or null.");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IconSearch } from "@tabler/icons-react";
 import { Button, Autocomplete, SimpleGrid, Center } from "@mantine/core";
@@ -14,14 +14,14 @@ interface Post {
   summary: string;
 }
 
-export default function HomePage() {
+function HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [posts, setPosts] = useState<Post[]>([]);
   const [totalPosts, setTotalPosts] = useState(0);
   const [searchText, setSearchText] = useState(searchParams.get("query") || "");
   const [currentPage, setCurrentPage] = useState(
-    parseInt(searchParams.get("page") || "1", 10),
+    parseInt(searchParams.get("page") || "1", 10)
   );
   const [inputText, setInputText] = useState(searchText);
   const perPage = 6;
@@ -29,7 +29,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await fetch(
-        `/api/getPosts?query=${searchText}&page=${currentPage}`,
+        `/api/getPosts?query=${searchText}&page=${currentPage}`
       );
       const data = await response.json();
 
@@ -42,22 +42,22 @@ export default function HomePage() {
     };
 
     fetchPosts();
-  }, [searchText, currentPage]); // `searchText` と `currentPage` の変更時にのみ実行
+  }, [searchText, currentPage]);
 
   const handleSearch = () => {
     const params = new URLSearchParams(window.location.search);
-    params.set("query", inputText); // `inputText` を検索クエリに使用
+    params.set("query", inputText);
     params.set("page", "1");
-    router.push(`/?${params.toString()}`); // 修正: useRouter でクエリを更新
-    setSearchText(inputText); // 検索実行時にのみ `searchText` を更新
-    setCurrentPage(1); // ページをリセット
+    router.push(`/?${params.toString()}`);
+    setSearchText(inputText);
+    setCurrentPage(1);
   };
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(window.location.search);
     params.set("query", searchText);
     params.set("page", newPage.toString());
-    router.push(`/?${params.toString()}`); // 修正: useRouter を使用してページ遷移
+    router.push(`/?${params.toString()}`);
     setCurrentPage(newPage);
   };
 
@@ -104,9 +104,17 @@ export default function HomePage() {
         <PaginationComponent
           currentPage={currentPage}
           totalPages={Math.ceil(totalPosts / perPage)}
-          onPageChange={handlePageChange} // 修正: 正しい関数を渡す
+          onPageChange={handlePageChange}
         />
       </Center>
     </>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomePageContent />
+    </Suspense>
   );
 }
