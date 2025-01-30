@@ -1,7 +1,6 @@
 // app/components/PaginationComponent.tsx
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Pagination } from "@mantine/core";
 
 interface PaginationComponentProps {
@@ -15,8 +14,6 @@ export function PaginationComponent({
   totalPages,
   onPageChange,
 }: PaginationComponentProps) {
-  const router = useRouter();
-
   return (
     <Pagination
       total={totalPages}

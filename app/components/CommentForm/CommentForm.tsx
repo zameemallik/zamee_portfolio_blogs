@@ -41,7 +41,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
 
   const handleSubmit = async (values: { content: string }) => {
     try {
-      const response = await axios.post("/api/comments/addComment", {
+      await axios.post("/api/comments/addComment", {
         content: values.content,
         postId,
         userId,

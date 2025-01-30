@@ -5,11 +5,8 @@ import { GithubIcon } from "@mantinex/dev-icons";
 import styles from "./page.module.css";
 import React from "react";
 import { supabase } from "../../lib/supabase/supabase";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const router = useRouter();
-
   const signInWithGithub = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "github",
