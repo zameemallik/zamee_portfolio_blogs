@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Container, Group, Title, Burger } from "@mantine/core";
+import { Container, Title, Burger } from "@mantine/core";
 import Link from "next/link";
 import classes from "./Header.module.css";
 import { supabase } from "../../../lib/supabase/supabase";
