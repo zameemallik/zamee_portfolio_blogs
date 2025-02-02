@@ -5,6 +5,7 @@ import { GithubIcon } from "@mantinex/dev-icons";
 import styles from "./page.module.css";
 import React from "react";
 import { supabase } from "../../lib/supabase/supabase";
+import { notifications } from "@mantine/notifications";
 
 export default function LoginPage() {
   const signInWithGithub = async () => {
@@ -14,9 +15,12 @@ export default function LoginPage() {
         redirectTo: `${window.location.origin}/auth/callback`, // 認証後のコールバックURL
       },
     });
-
     if (error) {
-      console.error("Login failed:", error.message);
+      notifications.show({
+        title: "Login Error",
+        message: "Login attempt failed. Please try again.",
+        color: "red",
+      });
     }
   };
   return (
