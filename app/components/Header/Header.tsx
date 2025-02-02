@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Container, Group, Title } from "@mantine/core";
+import { Container, Group, Title, Burger } from "@mantine/core";
 import Link from "next/link";
 import classes from "./Header.module.css";
 import { supabase } from "../../../lib/supabase/supabase";
@@ -10,8 +10,8 @@ import { User } from "@supabase/supabase-js";
 export function HeaderComponents() {
   const [active, setActive] = useState("/login");
   const [user, setUser] = useState<User | null>(null);
+  const [menuOpened, setMenuOpened] = useState(false);
 
-  // ユーザーのログイン状態を取得する関数
   const fetchUser = async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error) {
@@ -23,27 +23,17 @@ export function HeaderComponents() {
   };
 
   useEffect(() => {
-    // コンポーネントのマウント時にユーザー情報を取得
     fetchUser();
-
-    // 認証状態の変化を監視
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (session?.user) {
-          setUser(session.user);
-        } else {
-          setUser(null);
-        }
-      },
+        setUser(session?.user || null);
+      }
     );
-
-    // クリーンアップ関数
     return () => {
       authListener.subscription.unsubscribe();
     };
   }, []);
 
-  // ログアウト処理
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -51,16 +41,13 @@ export function HeaderComponents() {
     } else {
       setUser(null);
       setActive("/login");
+      setMenuOpened(false);
     }
   };
 
-  // ログイン状態に応じたリンクの設定
   const links = user
     ? [
-        {
-          link: `/profile/${user.user_metadata.user_name}`,
-          label: "Profile",
-        },
+        { link: `/profile/${user.user_metadata.user_name}`, label: "Profile" },
         { link: "#", label: "Logout", onClick: handleLogout },
       ]
     : [
@@ -68,16 +55,10 @@ export function HeaderComponents() {
         { link: "/signup", label: "Signup" },
       ];
 
-  // リンク要素の生成
   const items = links.map((link) => (
     <Link
-      style={{
-        textDecoration: "none",
-        color: "black",
-      }}
       key={link.label}
       href={link.link}
-      passHref
       className={`${classes.link} ${
         active === link.link ? classes.active : ""
       }`}
@@ -87,6 +68,7 @@ export function HeaderComponents() {
           link.onClick();
         } else {
           setActive(link.link);
+          setMenuOpened(false);
         }
       }}
     >
@@ -97,14 +79,7 @@ export function HeaderComponents() {
   return (
     <header className={classes.header}>
       <Container size="lg" className={classes.inner}>
-        <Link
-          href="/"
-          passHref
-          style={{
-            textDecoration: "none",
-            color: "black",
-          }}
-        >
+        <Link href="/" className={classes.logo}>
           <Title
             order={1}
             style={{
@@ -114,7 +89,14 @@ export function HeaderComponents() {
             Blogs for Engineer
           </Title>
         </Link>
-        <Group className={classes.links}>{items}</Group>
+        <Burger
+          opened={menuOpened}
+          onClick={() => setMenuOpened((o) => !o)}
+          className={classes.burger}
+        />
+        <nav className={`${classes.nav} ${menuOpened ? classes.navOpen : ""}`}>
+          {items}
+        </nav>
       </Container>
     </header>
   );

@@ -50,7 +50,7 @@
 
 ### アプリ URL
 
-追記予定
+https://zamee-protfolio-blogs-zameemalliks-projects.vercel.app/login
 
 ## 開発環境の構築方法
 

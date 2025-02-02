@@ -21,26 +21,58 @@
   width: 100%;
 }
 
-.links {
+.logo {
+  text-decoration: none;
+  color: black;
+}
+
+.burger {
+  display: none;
+}
+
+.nav {
   display: flex;
   gap: 1rem;
+}
+
+.navOpen {
+  display: block;
 }
 
 .link {
   font-size: var(--mantine-font-size-md);
   color: var(--mantine-color-gray-7);
-  text-decoration: none; /* アンダーバーを削除 */
+  text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: var(--mantine-radius-sm);
-  transition:
-    background-color 0.2s,
-    color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .link:hover,
 .link:focus,
 .link:active {
-  text-decoration: none; /* ホバーや押下時も下線を削除 */
-  background-color: var(--mantine-color-gray-5); /* 背景色 */
-  color: var(--mantine-color-gray-7); /* ホバー時の文字色を元に戻す */
+  background-color: var(--mantine-color-gray-5);
+  color: var(--mantine-color-gray-7);
+}
+
+@media (max-width: 768px) {
+  .burger {
+    display: block;
+  }
+
+  .nav {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    right: 0;
+    background: white;
+    width: 100%;
+    padding: 1rem;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .navOpen {
+    display: flex;
+  }
 }
