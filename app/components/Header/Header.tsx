@@ -47,7 +47,7 @@ export function HeaderComponents() {
 
   const links = user
     ? [
-        { link: `/profile/${user.user_metadata.user_name}`, label: "Profile" },
+        { link: `/profile/${user.id}`, label: "Profile" },
         { link: "#", label: "Logout", onClick: handleLogout },
       ]
     : [

@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IconSearch } from "@tabler/icons-react";
-import { Button, Autocomplete, SimpleGrid, Center } from "@mantine/core";
+import { Button, Autocomplete, SimpleGrid, Center, Box } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { BlogCard } from "./components/BlogCards/BlogCard";
 import { PaginationComponent } from "./components/PaginationComponent/PaginationComponent";
 
@@ -26,6 +27,9 @@ function HomePageContent() {
   const [inputText, setInputText] = useState(searchText);
   const perPage = 6;
 
+  // Define a media query to detect small screens
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
+
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await fetch(
@@ -47,47 +51,50 @@ function HomePageContent() {
   const handleSearch = () => {
     const params = new URLSearchParams(window.location.search);
     params.set("query", inputText);
-    params.set("page", "1");
     router.push(`/?${params.toString()}`);
     setSearchText(inputText);
     setCurrentPage(1);
   };
 
-  const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(window.location.search);
-    params.set("query", searchText);
-    params.set("page", newPage.toString());
-    router.push(`/?${params.toString()}`);
-    setCurrentPage(newPage);
-  };
-
   return (
     <>
-      <Center style={{ margin: "20px 0", paddingTop: "10px" }}>
-        <Autocomplete
-          placeholder="Search"
-          leftSection={<IconSearch size={16} stroke={1.5} />}
-          data={[
-            "React",
-            "Angular",
-            "Vue",
-            "Next.js",
-            "Riot.js",
-            "Svelte",
-            "Blitz.js",
-          ]}
-          value={inputText}
-          onChange={(value) => setInputText(value)}
-          visibleFrom="xs"
-          style={{ flex: 1, marginRight: 10 }}
-        />
-        <Button onClick={handleSearch}>Search</Button>
+      <Center style={{ margin: "20px 0", paddingTop: "10px", width: "100%" }}>
+        <Box
+          style={{
+            display: "flex",
+            flexDirection: isSmallScreen ? "column" : "row",
+            width: "80%",
+            gap: isSmallScreen ? "10px" : "0",
+          }}
+        >
+          <Autocomplete
+            placeholder="Search"
+            rightSection={<IconSearch size={16} stroke={1.5} />}
+            data={[
+              "React",
+              "Angular",
+              "Vue",
+              "Next.js",
+              "Riot.js",
+              "Svelte",
+              "Blitz.js",
+            ]}
+            value={inputText}
+            onChange={(value) => setInputText(value)}
+            style={{ flex: 1 }}
+          />
+          <Button
+            onClick={handleSearch}
+            style={{ marginLeft: isSmallScreen ? 0 : 10 }}
+          >
+            Search
+          </Button>
+        </Box>
       </Center>
 
       <SimpleGrid
         cols={{ base: 1, sm: 2, lg: 3 }}
-        spacing={{ base: 10, sm: "xl" }}
-        verticalSpacing={{ base: "md", sm: "xl" }}
+        spacing={{ base: "md", sm: "lg", lg: "xl" }}
       >
         {posts.map((post) => (
           <BlogCard
@@ -104,7 +111,7 @@ function HomePageContent() {
         <PaginationComponent
           currentPage={currentPage}
           totalPages={Math.ceil(totalPosts / perPage)}
-          onPageChange={handlePageChange}
+          onPageChange={(newPage) => setCurrentPage(newPage)}
         />
       </Center>
     </>

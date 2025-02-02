@@ -1,0 +1,14 @@
+/* page.module.css */
+.form {
+  width: 100%;
+  max-width: 400px;
+}
+
+.githubButton {
+  background-color: var(--mantine-color-dark-6);
+  color: #fff;
+}
+
+.githubButton:hover {
+  background-color: var(--mantine-color-dark-9);
+}

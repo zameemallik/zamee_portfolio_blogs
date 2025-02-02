@@ -32,14 +32,14 @@ function AuthCallbackComponent() {
         } = await supabase.auth.getUser();
 
         if (user) {
-          const username = user.user_metadata?.user_name;
-          if (username) {
-            router.push(`/profile/${username}`);
+          const userId = user.id;
+          if (userId) {
+            router.push(`/profile/${userId}`);
           } else {
-            console.error("Username not found in user metadata");
+            console.error("userId not found in user");
             notifications.show({
               title: "Login Error",
-              message: "Username not found.",
+              message: "userId not found.",
               color: "red",
             });
             router.push("/login");
