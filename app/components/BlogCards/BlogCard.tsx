@@ -27,9 +27,12 @@ export const BlogCard = ({ id, post_img_url, title, summary }: Props) => {
         {title}
       </Text>
 
-      <Text mt="xs" c="dimmed" size="sm">
-        {summary}
-      </Text>
+      <Text
+        mt="xs"
+        c="dimmed"
+        size="sm"
+        dangerouslySetInnerHTML={{ __html: summary }}
+      />
     </Card>
   );
 };

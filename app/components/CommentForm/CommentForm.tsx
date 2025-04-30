@@ -1,33 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useForm } from "@mantine/form";
-import { TextInput, Button, Box } from "@mantine/core";
-import axios from "axios";
-import { supabase } from "../../../lib/supabase/supabase";
-import { useRouter } from "next/navigation"; // useRouterをインポート
+import { TextInput, Button, Box, Text } from "@mantine/core";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "../../providers/AuthProvider";
+import { trpc } from "@/app/_trpc/client";
+import { useEffect } from "react";
 
 interface CommentFormProps {
   postId: string;
 }
 
 export default function CommentForm({ postId }: CommentFormProps) {
-  const [userId, setUserId] = useState<string | null>(null);
-  const router = useRouter(); // useRouterフックを初期化
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-
-      if (error) {
-        setUserId(null);
-      } else if (data.user) {
-        setUserId(data.user.id);
-      }
-    };
-
-    fetchUser();
-  }, []);
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
 
   const form = useForm({
     initialValues: {
@@ -39,19 +26,60 @@ export default function CommentForm({ postId }: CommentFormProps) {
     },
   });
 
-  const handleSubmit = async (values: { content: string }) => {
-    try {
-      await axios.post("/api/comments/addComment", {
-        content: values.content,
-        postId,
-        userId,
-      });
+  const utils = trpc.useUtils();
+
+  // tRPCのuseMutation形式で定義
+  const addComment = trpc.post.addComment.useMutation({
+    onSuccess: async () => {
       form.reset();
-      router.refresh(); // コメント投稿後にページを再レンダリングz
-    } catch (error) {
-      console.error("コメントの投稿中にエラーが発生しました:", error);
+      await utils.post.getPostById.invalidate({ id: postId });
+    },
+    onError: (error) => {
+      console.error("コメント投稿に失敗しました:", error);
+    },
+  });
+
+  const handleSubmit = (values: { content: string }) => {
+    if (!user) {
+      router.push("/login");
+      return;
     }
+
+    addComment.mutate({
+      content: values.content,
+      postId,
+    });
   };
+
+  useEffect(() => {
+    console.log("user:", user);
+    console.log("isLoading:", isLoading);
+  }, [user, isLoading]);
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (!user) {
+    return (
+      <Box>
+        <Text size="sm" c="dimmed">
+          コメントを投稿するには
+          <Link
+            href="/login"
+            style={{
+              color: "var(--mantine-color-blue-6)",
+              textDecoration: "none",
+              marginLeft: 4,
+            }}
+          >
+            ログイン
+          </Link>
+          してください
+        </Text>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -61,7 +89,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
           placeholder="コメントを入力してください"
           {...form.getInputProps("content")}
         />
-        <Button type="submit" mt="sm">
+        <Button type="submit" mt="sm" loading={addComment.isPending}>
           投稿
         </Button>
       </form>

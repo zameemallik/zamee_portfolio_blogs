@@ -19,16 +19,17 @@ model User {
 }
 
 model Post {
-  id         String    @id @default(uuid()) @db.Uuid
-  title      String    @db.VarChar(50)
-  postImgUrl String
-  summary    String    @db.VarChar(200)
-  content    String?
-  createdAt  DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt  DateTime  @updatedAt @db.Timestamptz(6)
-  authorId   String    @db.Uuid
-  comments   Comment[] @relation("PostComments")
-  author     User      @relation("UserPosts", fields: [authorId], references: [id])
+  id          String    @id @default(uuid()) @db.Uuid
+  title       String
+  content     String
+  published   Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(6)
+  authorId    String    @db.Uuid
+  author      User      @relation("UserPosts", fields: [authorId], references: [id])
+  comments    Comment[] @relation("PostComments")
+  postImgUrl  String?
+  summary     String?
 }
 
 model Comment {

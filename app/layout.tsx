@@ -3,6 +3,8 @@ import "@mantine/notifications/styles.css";
 import { MantineProvider, ColorSchemeScript, Container } from "@mantine/core";
 import { HeaderComponents } from "./components/Header/Header";
 import { Notifications } from "@mantine/notifications";
+import { TRPCProvider } from "./_trpc/provider";
+import { AuthProvider } from "./providers/AuthProvider";
 
 export default function RootLayout({
   children,
@@ -19,15 +21,19 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <MantineProvider defaultColorScheme="light">
-          <HeaderComponents />
-          <Notifications
-            position="top-right"
-            containerWidth={200}
-            zIndex={2077}
-          />
-          <Container style={{ marginTop: "80px" }}>{children}</Container>
-        </MantineProvider>
+        <TRPCProvider>
+          <MantineProvider defaultColorScheme="light">
+            <AuthProvider>
+              <HeaderComponents />
+              <Notifications
+                position="top-right"
+                containerWidth={200}
+                zIndex={2077}
+              />
+              <Container style={{ marginTop: "80px" }}>{children}</Container>
+            </AuthProvider>
+          </MantineProvider>
+        </TRPCProvider>
       </body>
     </html>
   );

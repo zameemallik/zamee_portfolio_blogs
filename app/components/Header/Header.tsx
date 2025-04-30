@@ -1,53 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Container, Title, Burger } from "@mantine/core";
 import Link from "next/link";
 import classes from "./Header.module.css";
-import { supabase } from "../../../lib/supabase/supabase";
-import { User } from "@supabase/supabase-js";
+import { useAuth } from "@/app/providers/AuthProvider";
 
 export function HeaderComponents() {
   const [active, setActive] = useState("/login");
-  const [user, setUser] = useState<User | null>(null);
   const [menuOpened, setMenuOpened] = useState(false);
-
-  const fetchUser = async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error) {
-      console.error("Error fetching user:", error.message);
-      setUser(null);
-    } else {
-      setUser(data.user);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user || null);
-      }
-    );
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
+  const { user, signOut } = useAuth(); // AuthContext から user と signOut を取得
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error logging out:", error.message);
-    } else {
-      setUser(null);
-      setActive("/login");
-      setMenuOpened(false);
-    }
+    await signOut();
+    setActive("/login");
+    setMenuOpened(false);
   };
 
   const links = user
     ? [
         { link: `/profile/${user.id}`, label: "Profile" },
+        { link: "/blog/new", label: "新規作成" },
         { link: "#", label: "Logout", onClick: handleLogout },
       ]
     : [

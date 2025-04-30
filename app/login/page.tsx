@@ -35,7 +35,7 @@ export default function LoginPage() {
       if (error.message === "Invalid login credentials") {
         notifications.show({
           title: "Login Error",
-          message: "You are not Signed up yet",
+          message: "Your email or password is wrong",
           color: "red",
         });
       } else {
@@ -46,12 +46,12 @@ export default function LoginPage() {
         });
       }
     } else {
+      router.push(`/profile/${data.user.id}`);
       notifications.show({
         title: "Login Success",
         message: "Login has been Succeeded",
         color: "green",
       });
-      router.push(`/profile/${data.user.id}`);
     }
   };
 

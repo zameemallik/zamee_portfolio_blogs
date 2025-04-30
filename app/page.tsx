@@ -7,6 +7,7 @@ import { Button, Autocomplete, SimpleGrid, Center, Box } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { BlogCard } from "./components/BlogCards/BlogCard";
 import { PaginationComponent } from "./components/PaginationComponent/PaginationComponent";
+import { trpc } from "@/app/_trpc/client";
 
 interface Post {
   id: string;
@@ -30,23 +31,17 @@ function HomePageContent() {
   // Define a media query to detect small screens
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
 
+  const { data: postsData, isLoading } = trpc.post.getPosts.useQuery({
+    query: searchText,
+    page: currentPage,
+  });
+
   useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch(
-        `/api/getPosts?query=${searchText}&page=${currentPage}`
-      );
-      const data = await response.json();
-
-      if (response.ok) {
-        setPosts(data.posts);
-        setTotalPosts(data.totalPosts);
-      } else {
-        console.error("Failed to fetch posts:", data.error);
-      }
-    };
-
-    fetchPosts();
-  }, [searchText, currentPage]);
+    if (postsData) {
+      setPosts(postsData.posts as Post[]);
+      setTotalPosts(postsData.totalPosts);
+    }
+  }, [postsData]);
 
   const handleSearch = () => {
     const params = new URLSearchParams(window.location.search);
@@ -92,20 +87,24 @@ function HomePageContent() {
         </Box>
       </Center>
 
-      <SimpleGrid
-        cols={{ base: 1, sm: 2, lg: 3 }}
-        spacing={{ base: "md", sm: "lg", lg: "xl" }}
-      >
-        {posts.map((post) => (
-          <BlogCard
-            key={post.id}
-            id={post.id}
-            post_img_url={post.postImgUrl}
-            title={post.title}
-            summary={post.summary}
-          />
-        ))}
-      </SimpleGrid>
+      {isLoading ? (
+        <Box>読み込み中...</Box>
+      ) : (
+        <SimpleGrid
+          cols={{ base: 1, sm: 2, lg: 3 }}
+          spacing={{ base: "md", sm: "lg", lg: "xl" }}
+        >
+          {posts.map((post) => (
+            <BlogCard
+              key={post.id}
+              id={post.id}
+              post_img_url={post.postImgUrl}
+              title={post.title}
+              summary={post.summary}
+            />
+          ))}
+        </SimpleGrid>
+      )}
 
       <Center style={{ margin: "20px 0" }}>
         <PaginationComponent

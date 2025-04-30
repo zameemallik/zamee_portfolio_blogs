@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Avatar,
   Text,
@@ -9,60 +9,60 @@ import {
   Modal,
   TextInput,
 } from "@mantine/core";
-import { Comment, User } from "@prisma/client";
-import axios from "axios";
+import type { inferRouterOutputs } from "@trpc/server";
+import type { AppRouter } from "@/server/routers";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../../lib/supabase/supabase";
+import { trpc } from "@/app/_trpc/client";
+import { useAuth } from "../../providers/AuthProvider";
 
-type CommentWithUser = Comment & {
-  user: User | null;
-};
+type RouterOutputs = inferRouterOutputs<AppRouter>;
+type PostDetail = RouterOutputs["post"]["getPostById"];
+type CommentWithUser = PostDetail["comments"][number];
 
-interface Props {
-  comment: CommentWithUser;
-}
-
-export const CommentCard = ({ comment }: Props) => {
-  const [userId, setUserId] = useState<string | null>(null);
+export const CommentCard = ({ comment }: { comment: CommentWithUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
+  const utils = trpc.useUtils();
 
-      if (error) {
-        setUserId(null);
-      } else if (data.user) {
-        setUserId(data.user.id);
-      }
-    };
+  const updateComment = trpc.post.updateComment.useMutation({
+    onSuccess: () => {
+      utils.post.getPostById.invalidate({ id: comment.postId });
+    },
+  });
 
-    fetchUser();
-  }, []);
+  const deleteComment = trpc.post.deleteComment.useMutation({
+    onSuccess: () => {
+      utils.post.getPostById.invalidate({ id: comment.postId });
+    },
+  });
 
   const handleEdit = async () => {
+    setIsSubmitting(true);
     try {
-      await axios.post("/api/comments/updateComment", {
+      await updateComment.mutateAsync({
         id: comment.id,
         content: editedContent,
       });
       setIsEditing(false);
-      router.refresh();
     } catch (error) {
-      console.error("コメントの更新中にエラーが発生しました:", error);
+      console.error("Failed to update comment:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
+    setIsSubmitting(true);
     try {
-      await axios.post("/api/comments/deleteComment", {
-        id: comment.id,
-      });
-      router.refresh();
+      await deleteComment.mutateAsync({ id: comment.id });
     } catch (error) {
-      console.error("コメントの削除中にエラーが発生しました:", error);
+      console.error("Failed to delete comment:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -80,12 +80,17 @@ export const CommentCard = ({ comment }: Props) => {
           <Text size="sm" color="dimmed">
             {comment.content}
           </Text>
-          {userId && userId === comment.userId && (
+          {user?.id === comment.userId && (
             <Group mt="xs">
               <Button size="xs" onClick={() => setIsEditing(true)}>
                 編集
               </Button>
-              <Button size="xs" color="red" onClick={handleDelete}>
+              <Button
+                size="xs"
+                color="red"
+                onClick={handleDelete}
+                loading={isSubmitting}
+              >
                 削除
               </Button>
             </Group>
@@ -102,7 +107,7 @@ export const CommentCard = ({ comment }: Props) => {
           value={editedContent}
           onChange={(event) => setEditedContent(event.currentTarget.value)}
         />
-        <Button mt="md" onClick={handleEdit}>
+        <Button mt="md" onClick={handleEdit} loading={isSubmitting}>
           保存
         </Button>
       </Modal>
