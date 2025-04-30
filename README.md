@@ -52,6 +52,10 @@
 
 https://zamee-protfolio-blogs-zameemalliks-projects.vercel.app/login
 
+### テストアカウント
+- メールアドレス：test@gmail.com
+- パスワード：test1234
+
 ## 開発環境の構築方法
 
 ### 構築環境
