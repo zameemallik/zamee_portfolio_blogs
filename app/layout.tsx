@@ -16,7 +16,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
         <link
-          href="https://fonts.googleapis.com/css?family=Tangerine"
+          href="https://fonts.googleapis.com/css?family=Tangerine&display=optional"
           rel="stylesheet"
         />
       </head>

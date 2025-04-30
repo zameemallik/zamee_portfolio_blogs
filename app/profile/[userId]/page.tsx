@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { supabase } from "../../../lib/supabase/supabase";
 
 export default async function ProfilePage({
@@ -26,7 +27,7 @@ export default async function ProfilePage({
   return (
     <>
       <h1>ようこそ、{user.displayName} さん！</h1>
-      {user.userImgUrl && <img src={user.userImgUrl} alt="User Image" />}
+      {user.userImgUrl && <Image src={user.userImgUrl} alt="User Image" />}
       <p>こちらのページはまだ未実装です。</p>
     </>
   );

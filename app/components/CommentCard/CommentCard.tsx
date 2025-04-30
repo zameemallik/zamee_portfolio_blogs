@@ -11,7 +11,6 @@ import {
 } from "@mantine/core";
 import type { inferRouterOutputs } from "@trpc/server";
 import type { AppRouter } from "@/server/routers";
-import { useRouter } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
 import { useAuth } from "../../providers/AuthProvider";
 
@@ -23,7 +22,6 @@ export const CommentCard = ({ comment }: { comment: CommentWithUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
   const { user } = useAuth();
 
   const utils = trpc.useUtils();

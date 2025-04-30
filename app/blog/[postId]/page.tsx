@@ -5,6 +5,7 @@ import { Box, Title, Text, Group, Avatar, Divider } from "@mantine/core";
 import CommentForm from "../../components/CommentForm/CommentForm";
 import { trpc } from "@/app/_trpc/client";
 import React from "react";
+import Image from "next/image";
 
 export default function BlogDetail({
   params,
@@ -28,9 +29,11 @@ export default function BlogDetail({
     <>
       {/* Blog Image */}
       <Box mb="md" style={{ textAlign: "center" }}>
-        <img
+        <Image
           src={post.postImgUrl || "/default_img.jpg"}
           alt="post image"
+          width={1200} // 表示サイズの最大幅を指定
+          height={300} // アスペクト比に応じて調整可
           style={{
             width: "100%",
             height: "300px",
